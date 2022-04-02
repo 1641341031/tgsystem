@@ -4,20 +4,20 @@
       <div class="vector-container"><img src="@/assets/touxiang.jpeg" alt="touxiang"></div>
       <!-- 登录表单 -->
       <el-form :model="loginForm" ref="loginForm" label-width="0px" class="login-form-container" :rules="rules">
-          <el-form-item prop="email">
-              <el-input placeholder="用户邮箱" prefix-icon="el-icon-user" v-model="loginForm.email" class="set-with" ></el-input>
+          <el-form-item prop="username">
+              <el-input placeholder="用户名" prefix-icon="el-icon-user" v-model="loginForm.username" class="set-with" ></el-input>
           </el-form-item>
           <el-form-item prop="password">
-              <el-input placeholder="请输入密码" prefix-icon="el-icon-lock" v-model="loginForm.password" show-password class="set-with" ></el-input>
+              <el-input placeholder="密码" prefix-icon="el-icon-lock" v-model="loginForm.password" show-password class="set-with" ></el-input>
           </el-form-item>
           <el-form-item>
-              <el-button type="success" class="login-btn set-with" @click="onSubmit">登录</el-button>
+              <el-button type="success" class="login-btn set-with" @click="handleLogin">登录</el-button>
           </el-form-item>
       </el-form>
       <div  class="divider"></div>
       <!-- 用户注册或忘记密码 -->
       <div class="rg-fg-container">
-          <el-button size="medium" @click="open1">用户注册</el-button>
+          <el-button size="medium" @click="toRegister">用户注册</el-button>
           <el-button size="medium" @click="open2">忘记密码</el-button>
       </div>
       
@@ -27,43 +27,69 @@
 
 <script>
 
+import {isvalidUsername} from '@/utils/validate';
+import {setCookie,getCookie} from '@/utils/support';
+
   export default {
     name: 'Login',
     data: function () {
+		const validateUsername = (rule, value, callback) => {
+        if (!isvalidUsername(value)) {
+          callback(new Error('请输入正确的用户名'))
+        } else {
+          callback()
+        }
+      };
+      const validatePass = (rule, value, callback) => {
+        if (value.length < 3) {
+          callback(new Error('密码不能小于3位'))
+        } else {
+          callback()
+        }
+      };
         return {
             loginForm: {
-                email: '',
+                username: '',
                 password: ''
             },
             rules: {
-                email: [
-                    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-                    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-                    ],
-                password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' },
-                    { min: 6, max: 10, message: '请正确输入密码', trigger: 'blur' }
-                ]
+                username: [{required: true, trigger: 'blur', validator: validateUsername}],
+				password: [{required: true, trigger: 'blur', validator: validatePass}]
             }
         }
     },
+	created() {
+      this.loginForm.username = getCookie("username");
+      this.loginForm.password = getCookie("password");
+      if(this.loginForm.username === undefined||this.loginForm.username==null||this.loginForm.username===''){
+        this.loginForm.username = 'admin';
+      }
+      if(this.loginForm.password === undefined||this.loginForm.password==null){
+        this.loginForm.password = '';
+      }
+    },
     methods: {
-        onSubmit: function () {
-            this.$message({
-                message: '恭喜你，成功登录',
-                type: 'success'
-                })
-        },
-        open1: function () {
-            this.$message({
-                message: '还没完成开发'
-                })
-        },
-        open2: function () {
-            this.$message({
-                message: '还没完成开发'
-                })
-        }
+        handleLogin() {
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            this.$store.dispatch('Login', this.loginForm).then(() => {
+              setCookie("username",this.loginForm.username,15);
+              setCookie("password",this.loginForm.password,15);
+              this.$router.push({path: '/home'})
+            }).catch(() => {
+			console.log("login fail");
+            })
+          } else {
+            console.log('参数验证不合法！');
+            return false
+          }
+        })
+      },
+	  toRegister(){
+		this.$router.push({path: '/register'})
+	  },
+	  open2(){
+	  }
     }
   }
 </script>

@@ -1,12 +1,14 @@
 <template>
     <div class="register-container">
-        <h2>欢迎注册</h2>
         <el-form :model="registerForm" :rules="rules" ref="registerForm" class="rg-form-container" label-width="0px" >
             <el-form-item prop="name" class="unify-with">
-                <el-input v-model="registerForm.name" placeholder="请输入账号" prefix-icon="el-icon-user"></el-input>
+                <el-input v-model="registerForm.username" placeholder="请输入用户名" prefix-icon="el-icon-user"></el-input>
             </el-form-item>
             <el-form-item prop="email" class="unify-with">
                 <el-input v-model="registerForm.email" placeholder="请输入邮箱" prefix-icon="el-icon-message"></el-input>
+            </el-form-item>
+			<el-form-item class="unify-with">
+                <el-input v-model="registerForm.nickName" placeholder="请输入昵称"></el-input>
             </el-form-item>
             <el-form-item prop="password" class="unify-with">
                 <el-input v-model="registerForm.password" placeholder="请输入密码" show-password prefix-icon="el-icon-lock"></el-input>
@@ -15,12 +17,12 @@
                 <el-input v-model="registerForm.passwords" placeholder="再次输入密码" show-password prefix-icon="el-icon-lock"></el-input>
             </el-form-item>
             <el-form-item class="unify-with">
-                <el-button type="primary" style="width: 100%">注册</el-button>
+                <el-button type="primary" style="width: 100%" @click="handleRegister">注册</el-button>
             </el-form-item>
         </el-form>
         <!-- <div  class="divider"></div> -->
         <div class="lg-container">
-            <el-link type="primary">立即登录</el-link>
+            <el-link type="primary" @click="toLogin">立即登录</el-link>
         </div>
     </div>
 </template>
@@ -50,8 +52,11 @@
       };
             return {
                 registerForm: {
-                    name: '',
+                    username: '',
                     email: '',
+					icon: 'iconDefault',
+					nickName: '',
+					note: '',
                     password: '',
                     passwords: ''
                 },
@@ -72,7 +77,24 @@
                     ]
                 }
             }
-        }
+        },
+		methods: {
+		
+			handleRegister(){
+                let registerData = {...this.registerForm}; //对象的浅拷贝
+                delete registerData.passwords;
+                
+				this.$store.dispatch('Register', registerData).then(() => {
+				this.$router.push({path: '/login'})
+			}).catch(() => {
+				console.log("register fail");
+			})
+			},
+			
+			toLogin(){
+				this.$router.push({path: '/login'})
+			}
+		}
     }
 </script>
 
@@ -87,11 +109,6 @@ body{
     height: 100%;
     margin: 100px auto;
     background-color: #fff;
-    h2{
-        color: #409EFF;
-        padding: 8px;
-        text-align: center;
-    }
     .unify-with{
         margin: 20px auto;
         width: 300px;
