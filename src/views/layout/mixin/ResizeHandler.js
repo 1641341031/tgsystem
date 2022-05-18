@@ -1,6 +1,6 @@
 import store from '@/store'
 
-const {baby} = document;
+const {body} = document;
 const WIDTH = 2014;
 const RATIO = 3;
 
