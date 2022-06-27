@@ -39,10 +39,10 @@
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
-        <el-table-column label="帐号" align="center">
+        <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{scope.row.username}}</template>
         </el-table-column>
-        <el-table-column label="姓名" align="center">
+        <el-table-column label="昵称" align="center">
           <template slot-scope="scope">{{scope.row.nickName}}</template>
         </el-table-column>
         <el-table-column label="邮箱" align="center">
@@ -102,10 +102,10 @@
       <el-form :model="admin"
                ref="adminForm"
                label-width="150px" size="small">
-        <el-form-item label="帐号：">
+        <el-form-item label="用户名：">
           <el-input v-model="admin.username" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="姓名：">
+        <el-form-item label="昵称：">
           <el-input v-model="admin.nickName" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="邮箱：">
